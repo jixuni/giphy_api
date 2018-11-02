@@ -12,6 +12,7 @@ $(document).ready(function(){
                 text: searchTerm[i], 
                 id: 'btn_' + i,
                 value: searchTerm[i],
+                class: "giphyCall"
               }).prependTo("body");  
         }
     }
@@ -35,36 +36,78 @@ $(document).ready(function(){
                 method: "GET",
             }).then(function(response){
                 var searchData = response.data;
-                //console.log(searchData);
-                //console.log(response);
+                console.log(searchData);
+                console.log(response);
                 for(var i = 0; i < searchData.length; i++){
                     
                     var htmlDiv = $("<div>");
-                    
+                    var parentDownload = $("<a>", {
+                       // href: searchData[i].images.fixed_height.url,
+                    });
+                    var download = $("<button>",{
+                        text: "download",
+                        class: "downloadGif",
+                        href: searchData[i].images.fixed_height.url,
+                    });
                     var gifs = $("<img>", {
                         src: searchData[i].images.fixed_height_still.url,
                         "data-state": "still",
                         "data-animate": searchData[i].images.fixed_height.url,
                         "data-still": searchData[i].images.fixed_height_still.url,
-                        class: "gifs",
+                        class: "download",
                     });
+
 
                     var ratings = $("<p>");
 
-                    ratings.text("Rating: " + searchData[i].rating);
+                    ratings.html(searchData[i].title + "<br>"+  "Rating: " + searchData[i].rating);
 
                     //gifs.attr({"src": searchData[i].images.fixed_height.url});
-
+                    parentDownload.append(download);
                     htmlDiv.append(ratings);
-
+                    
                     htmlDiv.append(gifs);
-
+                    htmlDiv.append(parentDownload);
                     $(".gifHere").prepend(htmlDiv);
                 }
                 $("p").css("font-weight", "bold");
             })
         //})
     }
+    
+    // $(".downloadGif").on("click",function(event){
+    //     event.preventDefault();
+    //     $(this).download = searchData[i].images.fixed_height.url
+    // })
+
+
+    function forceDownload(blob, filename) {
+        var a = document.createElement('a');
+        a.download = filename;
+        a.href = blob;
+        a.click();
+      }
+      
+      // Current blob size limit is around 500MB for browsers
+      function downloadResource(url, filename) {
+        if (!filename) filename = url.split('\\').pop().split('/').pop();
+        fetch(url, {
+            headers: new Headers({
+              'Origin': location.origin
+            }),
+            mode: 'cors'
+          })
+          .then(response => response.blob())
+          .then(blob => {
+            let blobUrl = window.URL.createObjectURL(blob);
+            forceDownload(blobUrl, filename);
+          })
+          .catch(e => console.error(e));
+      }
+      
+     // downloadResource(response.data.images.fixed_height.url);
+
+
 
     $("#addButton").on("click", function(event){
         event.preventDefault();
@@ -76,6 +119,7 @@ $(document).ready(function(){
            text: inputVal,
            id: "btn_" + inputVal,
            value: inputVal,
+           class: "giphyCall"
        }).prependTo("body");
     })
 
@@ -91,8 +135,8 @@ $(document).ready(function(){
         }
     }
 
-    $(document).on("click", ".gifs", pausePlay);
-    $(document).on("click", "button", giphyApi);
+    $(document).on("click", "img", pausePlay);
+    $(document).on("click", ".giphyCall", giphyApi);
 
 
 });
