@@ -13,7 +13,7 @@ $(document).ready(function(){
                 id: 'btn_' + i,
                 value: searchTerm[i],
                 class: "giphyCall"
-              }).prependTo("body");  
+              }).prependTo(".container");  
         }
     }
     initialButton();
@@ -38,17 +38,25 @@ $(document).ready(function(){
                 var searchData = response.data;
                 console.log(searchData);
                 console.log(response);
+                
                 for(var i = 0; i < searchData.length; i++){
                     
                     var htmlDiv = $("<div>");
-                    var parentDownload = $("<a>", {
+                    //var parentDownload = $("<a>", {
                        // href: searchData[i].images.fixed_height.url,
-                    });
+                    //});
                     var download = $("<button>",{
                         text: "download",
                         class: "downloadGif",
+                        //onclick: "downloadResource()",
                         href: searchData[i].images.fixed_height.url,
                     });
+                    var favorite = $("<button>",{
+                        text: "favorite",
+                        class: "favoriteBtn",
+                        value: searchData[i].title,
+                        disable: false,
+                    })
                     var gifs = $("<img>", {
                         src: searchData[i].images.fixed_height_still.url,
                         "data-state": "still",
@@ -59,53 +67,73 @@ $(document).ready(function(){
 
 
                     var ratings = $("<p>");
-
+                    var lineBreak = $("<br>");
                     ratings.html(searchData[i].title + "<br>"+  "Rating: " + searchData[i].rating);
-
-                    //gifs.attr({"src": searchData[i].images.fixed_height.url});
-                    parentDownload.append(download);
-                    htmlDiv.append(ratings);
                     
-                    htmlDiv.append(gifs);
-                    htmlDiv.append(parentDownload);
+                    //gifs.attr({"src": searchData[i].images.fixed_height.url});
+                    //parentDownload.append(download);
                     $(".gifHere").prepend(htmlDiv);
+                    htmlDiv.prepend(ratings);
+                    htmlDiv.append(gifs);
+                    htmlDiv.append(lineBreak);
+                    htmlDiv.append(download);
+                    htmlDiv.append(favorite);
+                    
+                    //htmlDiv.append(parentDownload);
+                    
                 }
                 $("p").css("font-weight", "bold");
             })
+            
         //})
     }
+
+    var favGifs = [];
     
-    // $(".downloadGif").on("click",function(event){
-    //     event.preventDefault();
-    //     $(this).download = searchData[i].images.fixed_height.url
-    // })
+    function fav (){
+        var classes = $(this).val();
+        var stopBtn = $(this).attr("disable");
+        console.log(stopBtn);
+        
+        if (stopBtn === false){
+            favGifs.push(classes);
+            //$(this).attr("disable", true);
+            
+        } 
+        console.log(favGifs);
+        
+    }
+    $(document).on("click", ".favoriteBtn", fav);
+
+    // function forceDownload(blob, filename) {
+    //     var a = document.createElement('a');
+    //     a.download = filename;
+    //     a.href = blob;
+    //     $(".downloadGif").append(a);
+    //   }
+      
+    //   // Current blob size limit is around 500MB for browsers
+    //   function downloadResource(url, filename) {
+    //     if (!filename) filename = url.split('\\').pop().split('/').pop();
+    //     fetch(url, {
+    //         headers: new Headers({
+    //           'Origin': location.origin
+    //         }),
+    //         mode: 'cors'
+    //       })
+    //       .then(response => response.blob())
+    //       .then(blob => {
+    //         let blobUrl = window.URL.createObjectURL(blob);
+    //         forceDownload(blobUrl, filename);
+    //       })
+    //       .catch(e => console.error(e));
+    //   }
+      
 
 
-    function forceDownload(blob, filename) {
-        var a = document.createElement('a');
-        a.download = filename;
-        a.href = blob;
-        a.click();
-      }
-      
-      // Current blob size limit is around 500MB for browsers
-      function downloadResource(url, filename) {
-        if (!filename) filename = url.split('\\').pop().split('/').pop();
-        fetch(url, {
-            headers: new Headers({
-              'Origin': location.origin
-            }),
-            mode: 'cors'
-          })
-          .then(response => response.blob())
-          .then(blob => {
-            let blobUrl = window.URL.createObjectURL(blob);
-            forceDownload(blobUrl, filename);
-          })
-          .catch(e => console.error(e));
-      }
-      
-     // downloadResource(response.data.images.fixed_height.url);
+    //   downloadResource('https://media2.giphy.com/media/l4JyX0UySGvX3SdJ6/200.gif');
+
+
 
 
 
@@ -120,7 +148,7 @@ $(document).ready(function(){
            id: "btn_" + inputVal,
            value: inputVal,
            class: "giphyCall"
-       }).prependTo("body");
+       }).prependTo(".container");
     })
 
       function pausePlay(){
