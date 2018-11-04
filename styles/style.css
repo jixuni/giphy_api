@@ -111,3 +111,8 @@ button:active{
     background-color: white;
 
 }
+.favoriteBtn:active {
+    background-color: yellow;
+}
+
+

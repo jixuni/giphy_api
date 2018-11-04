@@ -13,7 +13,7 @@ $(document).ready(function(){
                 id: 'btn_' + i,
                 value: searchTerm[i],
                 class: "giphyCall"
-              }).prependTo(".container");  
+              }).prependTo(".topButtons");  
         }
     }
     initialButton();
@@ -28,16 +28,16 @@ $(document).ready(function(){
             var queryUrl = "https://api.giphy.com/v1/gifs/search?q=" + currentAnswer + apiKey + "&limit=10";
             
             
-            console.log(currentAnswer);
-            console.log(queryUrl);
+            //console.log(currentAnswer);
+            //console.log(queryUrl);
 
             $.ajax({
                 url: queryUrl,
                 method: "GET",
             }).then(function(response){
                 var searchData = response.data;
-                console.log(searchData);
-                console.log(response);
+                //console.log(searchData);
+                //console.log(response);
                 
                 for(var i = 0; i < searchData.length; i++){
                     
@@ -48,14 +48,14 @@ $(document).ready(function(){
                     var download = $("<button>",{
                         text: "download",
                         class: "downloadGif",
-                        //onclick: "downloadResource()",
-                        href: searchData[i].images.fixed_height.url,
+                        value: searchData[i].images.fixed_height.url,
+                        onclick: downloadResource("https://media0.giphy.com/media/OmQ9fnEshXtOU/200.gif"),
                     });
                     var favorite = $("<button>",{
                         text: "favorite",
                         class: "favoriteBtn",
                         value: searchData[i].title,
-                        disable: false,
+                        disable: "on",
                     })
                     var gifs = $("<img>", {
                         src: searchData[i].images.fixed_height_still.url,
@@ -89,71 +89,91 @@ $(document).ready(function(){
     }
 
     var favGifs = [];
-    
+    // function for favorite turns the button yellow 
     function fav (){
         var classes = $(this).val();
+        //console.log(classes);
         var stopBtn = $(this).attr("disable");
-        console.log(stopBtn);
+        //console.log(stopBtn);
         
-        if (stopBtn === false){
+        if (stopBtn === "on"){
             favGifs.push(classes);
-            //$(this).attr("disable", true);
-            
-        } 
-        console.log(favGifs);
+            $(this).attr("disable", "off"); 
+            $(this).css("background-color", "yellow");
+            $(this).css("color", "black");
+            console.log(favGifs)
+        } else {
+            // use the splice method to remove the specific string in array
+            favGifs.splice(favGifs.indexOf(classes),1);
+            $(this).attr("disable", "on")
+            $(this).css("background-color", "black");
+            $(this).css("color", "white");
+            console.log(favGifs)
+        }
         
     }
+
+    //console.log(favGifs);
     $(document).on("click", ".favoriteBtn", fav);
 
-    // function forceDownload(blob, filename) {
-    //     var a = document.createElement('a');
-    //     a.download = filename;
-    //     a.href = blob;
-    //     $(".downloadGif").append(a);
-    //   }
+
+
+
+    // function below works for force download, but the function only allows for https. 
+    // Something to do with cross orgin download browser will not let me download from json object.
+   /*  function forceDownload(blob, filename) {
+        var a = document.createElement('a');
+        a.download = filename;
+        a.href = blob;
+        $(".downloadGif").click();
+      }
       
-    //   // Current blob size limit is around 500MB for browsers
-    //   function downloadResource(url, filename) {
-    //     if (!filename) filename = url.split('\\').pop().split('/').pop();
-    //     fetch(url, {
-    //         headers: new Headers({
-    //           'Origin': location.origin
-    //         }),
-    //         mode: 'cors'
-    //       })
-    //       .then(response => response.blob())
-    //       .then(blob => {
-    //         let blobUrl = window.URL.createObjectURL(blob);
-    //         forceDownload(blobUrl, filename);
-    //       })
-    //       .catch(e => console.error(e));
-    //   }
+      // Current blob size limit is around 500MB for browsers
+      function downloadResource(url, filename) {
+        if (!filename) filename = url.split('\\').pop().split('/').pop();
+        fetch(url, {
+            headers: new Headers({
+              'Origin': location.origin
+            }),
+            mode: 'cors'
+          })
+          .then(response => response.blob())
+          .then(blob => {
+            let blobUrl = window.URL.createObjectURL(blob);
+            forceDownload(blobUrl, filename);
+          })
+          .catch(e => console.error(e));
+      }
       
+      
+    
+     */    
+
+     
+
+     
 
 
-    //   downloadResource('https://media2.giphy.com/media/l4JyX0UySGvX3SdJ6/200.gif');
 
 
-
-
-
+      // function for append new buttons to the DOM along with add attr to the button at the same time.
     $("#addButton").on("click", function(event){
         event.preventDefault();
        var inputVal = $("#searchTerm").val();
        searchTerm.push(inputVal);
-        console.log(inputVal);
-        console.log(searchTerm);
+        //console.log(inputVal);
+        //console.log(searchTerm);
        $("<button>", {
            text: inputVal,
            id: "btn_" + inputVal,
            value: inputVal,
            class: "giphyCall"
-       }).prependTo(".container");
+       }).prependTo(".topButtons");
     })
-
+    // pause play function for gifs, replace the gif with img
       function pausePlay(){
         var state = $(this).attr("data-state");
-        console.log(state);
+        //console.log(state);
         if(state === "still"){
             $(this).attr("src", $(this).attr("data-animate"));
             $(this).attr("data-state", "animate");
