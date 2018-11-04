@@ -49,7 +49,7 @@ $(document).ready(function(){
                         text: "download",
                         class: "downloadGif",
                         value: searchData[i].images.fixed_height.url,
-                        onclick: downloadResource("https://media0.giphy.com/media/OmQ9fnEshXtOU/200.gif"),
+                        //onclick: downloadResource("https://media0.giphy.com/media/OmQ9fnEshXtOU/200.gif"),
                     });
                     var favorite = $("<button>",{
                         text: "favorite",
